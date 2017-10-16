@@ -1,0 +1,83 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "25.0.3"
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:26.+'
+    apply plugin: 'com.jfrog.bintray'
+    apply plugin: 'com.github.dcendents.android-maven'
+    testCompile 'junit:junit:4.12'
+}
+
+
+group = 'com.metrostyles.mytestlibrary' // Change this to match your package name
+version = '1.0.0' // Change this to match your version number
+
+task generateSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier 'sources'
+}
+
+task generateJavadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath()
+            .join(File.pathSeparator))
+}
+
+task generateJavadocsJar(type: Jar) {
+    from generateJavadocs.destinationDir
+    classifier 'javadoc'
+}
+
+generateJavadocsJar.dependsOn generateJavadocs
+
+
+artifacts {
+    archives generateJavadocsJar
+    archives generateSourcesJar
+
+}
+
+bintray {
+    user = 'issacpeter'
+    key = '559421553ec6b0087b5588038978294553aadb9a'
+    pkg {
+        repo = 'maven'
+        name = 'com.metrostyles.mytestlibrary'
+
+        version {
+            name = '1.0.0-tuts'
+            desc = 'My test upload'
+            released  = new Date()
+            vcsTag = '1.0.0'
+        }
+
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/issacpeter/MyTestLibrary.git'
+        websiteUrl = 'https://github.com/issacpeter/MyTestLibrary'
+    }
+    configurations = ['archives']
+}
